@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -29,6 +31,12 @@ public class RunActivity extends Activity {
 
     private static final Handler sMainHandler = new Handler(Looper.getMainLooper());
 
+    private final String[] setupCommands = {
+            "adb shell pm grant simple.shell.runner android.permission.INTERACT_ACROSS_USERS",
+            "adb shell pm grant simple.shell.runner android.permission.WRITE_SECURE_SETTINGS",
+            "adb shell pm create-user TestUser"
+    };
+
     private final String[] quickCommands = {
             "cmd activity switch-user YOUR_ID",
             "for i in $(seq 1 999); do cmd activity switch-user $i && break; done",
@@ -47,17 +55,19 @@ public class RunActivity extends Activity {
         super.onCreate(null);
         getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE);
         getWindow().getDecorView().setSystemUiVisibility(android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE | android.view.View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | android.view.View.SYSTEM_UI_FLAG_FULLSCREEN | android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        
+
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
         root.setPadding(24, 48, 24, 24);
 
         TextView welcomeText = new TextView(this);
-        welcomeText.setText(isEn()
-                ? "Hello! This is an application for testers. Here you can execute simple shell commands on behalf of this application. Please grant this rights before using via Shizuku + aShell (F-droid app):\nadb shell pm grant simple.shell.runner android.permission.INTERACT_ACROSS_USERS\nadb shell pm grant simple.shell.runner android.permission.WRITE_SECURE_SETTINGS\nadb shell pm create-user TestUser"
-                : "Привет! Это приложение для тестировщиков. Здесь вы можете выполять простые shell команды от имени приложения. Пожалуйста дайте эти разрешения перед использованием через Shizuku + aShell (приложение из F-droid):\nadb shell pm grant simple.shell.runner android.permission.INTERACT_ACROSS_USERS\nadb shell pm grant simple.shell.runner android.permission.WRITE_SECURE_SETTINGS\nadb shell pm create-user TestUser");
+        String welcomeMessage = isEn()
+                ? "Hello! This is an application for testers. Here you can execute simple shell commands on behalf of this application."
+                : "Привет! Это приложение для тестировщиков. Здесь вы можете выполнять простые shell команды от имени приложения.";
+        
+        welcomeText.setText(welcomeMessage);
         welcomeText.setTextSize(14f);
-        welcomeText.setPadding(0, 0, 0, 24);
+        welcomeText.setPadding(0, 0, 0, 16);
         root.addView(welcomeText);
 
         TextView hintHeader = new TextView(this);
@@ -68,31 +78,70 @@ public class RunActivity extends Activity {
         root.addView(hintHeader);
 
         for (String cmd : quickCommands) {
-        LinearLayout row = new LinearLayout(this);
-        row.setOrientation(LinearLayout.HORIZONTAL);
-        row.setGravity(android.view.Gravity.CENTER_VERTICAL);
-        row.setPadding(0, 2, 0, 2);
+            LinearLayout row = new LinearLayout(this);
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+            row.setPadding(0, 2, 0, 2);
 
-        TextView cmdText = new TextView(this);
-        cmdText.setText(cmd);
-        cmdText.setTextSize(12f);
-        cmdText.setTextIsSelectable(true);
-        row.addView(cmdText, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+            TextView cmdText = new TextView(this);
+            cmdText.setText(cmd);
+            cmdText.setTextSize(12f);
+            cmdText.setTextIsSelectable(true);
+            row.addView(cmdText, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
 
-        Button copyBtn = new Button(this);
-        copyBtn.setText(isEn() ? "Copy" : "Копировать");
-        copyBtn.setTextSize(10f);
-        copyBtn.setOnClickListener(v -> {
-        android.content.ClipboardManager clipboard =
-                (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-        android.content.ClipData clip =
-                android.content.ClipData.newPlainText("command", cmd);
-        clipboard.setPrimaryClip(clip);
-        });
-        row.addView(copyBtn, new LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            Button copyBtn = new Button(this);
+            copyBtn.setText(isEn() ? "Copy" : "Копировать");
+            copyBtn.setTextSize(10f);
+            copyBtn.setOnClickListener(v -> {
+                android.content.ClipboardManager clipboard =
+                        (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                android.content.ClipData clip =
+                        android.content.ClipData.newPlainText("command", cmd);
+                clipboard.setPrimaryClip(clip);
+            });
+            row.addView(copyBtn, new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
-        root.addView(row);
+            root.addView(row);
+        }
+
+        TextView setupInfoText = new TextView(this);
+        String setupHtml = isEn()
+                ? "<br>Before running some commands, please grant the app necessary permissions via ADB and create a test user (copy and run the commands below using any ADB environment, for example <a href=\"https://github.com/RikkaApps/Shizuku/releases/latest\">Shizuku</a> + <a href=\"https://f-droid.org/ru/packages/in.sunilpaulmathew.ashell/\">aShell</a>):"
+                : "<br>Перед запуском некоторых команд предоставьте приложению нужные разрешения через ADB и создайте пользователя (скопируйте и выполните то, что ниже, через любую ADB среду, например <a href=\"https://github.com/RikkaApps/Shizuku/releases/latest\">Shizuku</a> + <a href=\"https://f-droid.org/ru/packages/in.sunilpaulmathew.ashell/\">aShell</a>):";
+
+        setupInfoText.setText(Html.fromHtml(setupHtml, Html.FROM_HTML_MODE_LEGACY));
+        setupInfoText.setTextSize(14f);
+        setupInfoText.setMovementMethod(LinkMovementMethod.getInstance());
+        setupInfoText.setPadding(0, 8, 0, 8);
+        root.addView(setupInfoText);
+
+        for (String cmd : setupCommands) {
+            LinearLayout row = new LinearLayout(this);
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+            row.setPadding(0, 2, 0, 2);
+
+            TextView cmdText = new TextView(this);
+            cmdText.setText(cmd);
+            cmdText.setTextSize(11f);
+            cmdText.setTextIsSelectable(true);
+            row.addView(cmdText, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+
+            Button copyBtn = new Button(this);
+            copyBtn.setText(isEn() ? "Copy" : "Копировать");
+            copyBtn.setTextSize(10f);
+            copyBtn.setOnClickListener(v -> {
+                android.content.ClipboardManager clipboard =
+                        (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                android.content.ClipData clip =
+                        android.content.ClipData.newPlainText("setup_command", cmd);
+                clipboard.setPrimaryClip(clip);
+            });
+            row.addView(copyBtn, new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+            root.addView(row);
         }
 
         input = new EditText(this);
@@ -107,7 +156,7 @@ public class RunActivity extends Activity {
         input.setFilters(new android.text.InputFilter[]{
                 new android.text.InputFilter.LengthFilter(INPUT_MAX_CHARS)
         });
-        
+
         input.setLongClickable(true);
         input.setCustomSelectionActionModeCallback(new android.view.ActionMode.Callback() {
             @Override
