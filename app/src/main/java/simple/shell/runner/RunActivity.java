@@ -189,12 +189,7 @@ public class RunActivity extends Activity {
         scroll.addView(output);
         root.addView(scroll, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f));
-
-        Button backBtn = new Button(this);
-        backBtn.setText(isEn() ? "Back" : "Назад");
-        backBtn.setOnClickListener(v -> finish());
-        root.addView(backBtn);
-
+        
         setContentView(root);
 
         sActiveInstance = this;
