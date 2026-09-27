@@ -1,0 +1,29 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="simple.shell.runner">
+	
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+	
+    <application
+		android:allowBackup="false"
+		android:debuggable="false"		
+		android:requestLegacyExternalStorage="false"
+        android:fullBackupContent="false"
+		android:label="SimpleShellRunner"
+		android:extractNativeLibs="false">
+
+		<activity
+			android:exported="true"			
+			android:launchMode="singleTask"
+			android:screenOrientation="portrait"
+			android:resizeableActivity="false"
+			android:excludeFromRecents="true"			
+			android:name=".RunActivity">
+			<intent-filter>    
+				<action android:name="android.intent.action.MAIN" />     
+				<category android:name="android.intent.category.LAUNCHER" />  
+			</intent-filter>
+		</activity>		
+
+    </application>
+</manifest>
