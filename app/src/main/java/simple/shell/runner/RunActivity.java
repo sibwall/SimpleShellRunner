@@ -19,11 +19,9 @@ public class RunActivity extends Activity {
     private EditText input;
     private Button button;
     private TextView output;
-    private ScrollView scroll;
 
     private static final int INPUT_MAX_CHARS = 100;
     private static final int OUTPUT_MAX_CHARS = 10_000;
-    private static final int MAX_OUTPUT_HEIGHT_PX = 600;
 
     private static volatile Process sProcess;
     private static final StringBuilder sOutputBuffer = new StringBuilder();
@@ -144,14 +142,13 @@ public class RunActivity extends Activity {
         root.addView(button);
 
         output = new TextView(this);
-        output.setPadding(0, 8, 0, 0);
+        output.setPadding(0, 24, 0, 0);
         output.setTextIsSelectable(true);
 
-        scroll = new ScrollView(this);
+        ScrollView scroll = new ScrollView(this);
         scroll.addView(output);
-        
         root.addView(scroll, new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, 0));
+                LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f));
 
         TextView setupInfoText = new TextView(this);
         String setupHtml = isEn()
@@ -196,7 +193,6 @@ public class RunActivity extends Activity {
 
         sActiveInstance = this;
         output.setText(sOutputBuffer.toString());
-        updateOutputHeight();
         button.setText(sRunning ? "Stop" : "Start");
     }
 
@@ -216,7 +212,6 @@ public class RunActivity extends Activity {
 
         sOutputBuffer.setLength(0);
         output.setText("");
-        updateOutputHeight();
         sRunning = true;
         button.setText("Stop");
 
@@ -233,14 +228,6 @@ public class RunActivity extends Activity {
                 while ((line = reader.readLine()) != null) {
                     sOutputBuffer.append(line).append("\n");
                     trimToLastChars(sOutputBuffer, OUTPUT_MAX_CHARS);
-                    
-                    sMainHandler.post(() -> {
-                        RunActivity active = sActiveInstance;
-                        if (active != null) {
-                            active.output.setText(sOutputBuffer.toString());
-                            active.updateOutputHeight();
-                        }
-                    });
                 }
                 p.waitFor();
             } catch (Exception e) {
@@ -255,36 +242,10 @@ public class RunActivity extends Activity {
                 RunActivity active = sActiveInstance;
                 if (active != null) {
                     active.output.setText(sOutputBuffer.toString());
-                    active.updateOutputHeight();
                     active.button.setText("Start");
                 }
             });
         }).start();
-    }
-
-    private void updateOutputHeight() {
-        if (scroll == null || output == null) return;
-
-        if (sOutputBuffer.length() == 0) {
-            android.view.ViewGroup.LayoutParams params = scroll.getLayoutParams();
-            params.height = 0;
-            scroll.setLayoutParams(params);
-            return;
-        }
-
-        output.post(() -> {
-            int lineCount = output.getLineCount();
-            int lineHeight = output.getLineHeight();
-            int contentHeight = lineCount * lineHeight + output.getPaddingTop() + output.getPaddingBottom();
-
-            int targetHeight = Math.min(contentHeight, MAX_OUTPUT_HEIGHT_PX);
-
-            android.view.ViewGroup.LayoutParams params = scroll.getLayoutParams();
-            if (params.height != targetHeight) {
-                params.height = targetHeight;
-                scroll.setLayoutParams(params);
-            }
-        });
     }
 
     private static void trimToLastChars(StringBuilder sb, int maxChars) {
