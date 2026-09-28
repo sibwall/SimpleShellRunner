@@ -151,7 +151,6 @@ public class RunActivity extends Activity {
         root.addView(scroll, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f));
 
-        // Секция настройки ADB перенесена вниз (после вывода)
         TextView setupInfoText = new TextView(this);
         String setupHtml = isEn()
                 ? "<br>Before running some commands, please grant the app necessary permissions via ADB and create a test user (copy and run the commands below using any ADB environment, for example <a href=\"https://github.com/RikkaApps/Shizuku/releases/latest\">Shizuku</a> + <a href=\"https://f-droid.org/ru/packages/in.sunilpaulmathew.ashell/\">aShell</a>):"
