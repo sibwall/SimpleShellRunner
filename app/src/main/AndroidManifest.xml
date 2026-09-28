@@ -1,11 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="simple.shell.runner">
 
+	<uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+
 	<uses-permission android:name="android.permission.MANAGE_APP_OPS_MODES" />
 
-	<uses-permission android:name="android.permission.QUERY_USERS" />
-	<uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
-    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+	<uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
 	
     <application
 		android:allowBackup="false"
