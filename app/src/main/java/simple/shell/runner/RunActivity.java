@@ -34,10 +34,8 @@ public class RunActivity extends Activity {
     private static final Handler sMainHandler = new Handler(Looper.getMainLooper());
 
     private final String[] quickCommands = {
-            "cmd activity switch-user YOUR_ID",
-            "cmd package list packages -s -u | grep -m 1 simple.shell.runner",
+            "cmd package list packages -s -u | grep -m 1 com.android.settings",
             "cmd -l",
-            "cmd settings put global factory_reset_requested 1",
             "ls /product/app/"
     };
 
