@@ -170,7 +170,7 @@ public class RunActivity extends Activity {
 
             TextView cmdText = new TextView(this);
             cmdText.setText(cmd);
-            cmdText.setTextSize(12f); // Размер шрифта приведен к 12f как у quickCommands
+            cmdText.setTextSize(12f);
             cmdText.setTextIsSelectable(true);
             row.addView(cmdText, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
 
