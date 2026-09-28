@@ -19,6 +19,8 @@ public class RunActivity extends Activity {
     private EditText input;
     private Button button;
     private TextView output;
+    private ScrollView scroll;
+    private LinearLayout root;
 
     private static final int INPUT_MAX_CHARS = 100;
     private static final int OUTPUT_MAX_CHARS = 10_000;
@@ -55,7 +57,7 @@ public class RunActivity extends Activity {
         getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE);
         getWindow().getDecorView().setSystemUiVisibility(android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE | android.view.View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | android.view.View.SYSTEM_UI_FLAG_FULLSCREEN | android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 
-        LinearLayout root = new LinearLayout(this);
+        root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
         root.setPadding(24, 48, 24, 24);
 
@@ -132,7 +134,7 @@ public class RunActivity extends Activity {
                 return false;
             }
             @Override
-            public void onDestroyActionMode(android.view.ActionMode mode) {
+            public boolean onDestroyActionMode(android.view.ActionMode mode) {
             }
         });
         root.addView(input);
@@ -145,10 +147,10 @@ public class RunActivity extends Activity {
         output.setPadding(0, 24, 0, 0);
         output.setTextIsSelectable(true);
 
-        ScrollView scroll = new ScrollView(this);
+        scroll = new ScrollView(this);
         scroll.addView(output);
         root.addView(scroll, new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f));
+                LinearLayout.LayoutParams.MATCH_PARENT, 0, 0f));
 
         TextView setupInfoText = new TextView(this);
         String setupHtml = isEn()
@@ -194,6 +196,7 @@ public class RunActivity extends Activity {
         sActiveInstance = this;
         output.setText(sOutputBuffer.toString());
         button.setText(sRunning ? "Stop" : "Start");
+        updateOutputLayout();
     }
 
     private void onButtonClick() {
@@ -212,6 +215,7 @@ public class RunActivity extends Activity {
 
         sOutputBuffer.setLength(0);
         output.setText("");
+        updateOutputLayout();
         sRunning = true;
         button.setText("Stop");
 
@@ -243,9 +247,32 @@ public class RunActivity extends Activity {
                 if (active != null) {
                     active.output.setText(sOutputBuffer.toString());
                     active.button.setText("Start");
+                    active.updateOutputLayout();
                 }
             });
         }).start();
+    }
+
+    private void updateOutputLayout() {
+        scroll.post(() -> {
+            if (sOutputBuffer.length() == 0) {
+                scroll.setLayoutParams(new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, 0, 0f));
+                return;
+            }
+
+            int lineCount = output.getLineCount();
+            int lineHeight = output.getLineHeight();
+            int contentHeight = (lineCount * lineHeight) + output.getPaddingTop() + output.getPaddingBottom();
+
+            int totalRootHeight = root.getHeight();
+            int ceilingHeight = totalRootHeight > 0 ? (int)(totalRootHeight * 0.4f) : 400; // Cap ceiling appropriately
+
+            int targetHeight = Math.min(contentHeight, ceilingHeight);
+
+            scroll.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, targetHeight, 0f));
+        });
     }
 
     private static void trimToLastChars(StringBuilder sb, int maxChars) {
@@ -265,6 +292,7 @@ public class RunActivity extends Activity {
         }
         sRunning = false;
         button.setText("Start");
+        updateOutputLayout();
     }
 
     @Override
