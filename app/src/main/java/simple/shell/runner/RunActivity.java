@@ -33,7 +33,6 @@ public class RunActivity extends Activity {
 
     private final String[] quickCommands = {
             "cmd activity switch-user YOUR_ID",
-            "for i in $(seq 1 999); do cmd activity switch-user $i && break; done",
             "cmd package list packages -s -u | grep -m 1 simple.shell.runner",
             "cmd -l",
             "cmd settings put global factory_reset_requested 1",
