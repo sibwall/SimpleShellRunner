@@ -134,7 +134,7 @@ public class RunActivity extends Activity {
                 return false;
             }
             @Override
-            public boolean onDestroyActionMode(android.view.ActionMode mode) {
+            public void onDestroyActionMode(android.view.ActionMode mode) {
             }
         });
         root.addView(input);
@@ -266,7 +266,7 @@ public class RunActivity extends Activity {
             int contentHeight = (lineCount * lineHeight) + output.getPaddingTop() + output.getPaddingBottom();
 
             int totalRootHeight = root.getHeight();
-            int ceilingHeight = totalRootHeight > 0 ? (int)(totalRootHeight * 0.4f) : 400; // Cap ceiling appropriately
+            int ceilingHeight = totalRootHeight > 0 ? (int)(totalRootHeight * 0.4f) : 400;
 
             int targetHeight = Math.min(contentHeight, ceilingHeight);
 
