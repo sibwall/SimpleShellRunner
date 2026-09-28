@@ -36,7 +36,8 @@ public class RunActivity extends Activity {
     private final String[] quickCommands = {
             "cmd package list packages -s -u | grep -m 1 com.android.settings",
             "cmd -l",
-            "ls /product/app/"
+            "ls /product/app/",
+            "dumpsys"
     };
 
     private final String[] setupCommands = {
