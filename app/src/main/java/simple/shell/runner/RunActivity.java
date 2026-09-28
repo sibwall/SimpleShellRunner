@@ -41,9 +41,7 @@ public class RunActivity extends Activity {
     };
 
     private final String[] setupCommands = {
-            "adb shell pm grant simple.shell.runner android.permission.INTERACT_ACROSS_USERS",
-            "adb shell pm grant simple.shell.runner android.permission.WRITE_SECURE_SETTINGS",
-            "adb shell pm create-user TestUser"
+            "adb shell pm grant simple.shell.runner android.permission.DUMP"
     };
 
     private boolean isEn() {
