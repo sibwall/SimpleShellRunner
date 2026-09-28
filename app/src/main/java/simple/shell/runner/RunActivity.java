@@ -266,7 +266,7 @@ public class RunActivity extends Activity {
             int contentHeight = (lineCount * lineHeight) + output.getPaddingTop() + output.getPaddingBottom();
 
             int totalRootHeight = root.getHeight();
-            int ceilingHeight = totalRootHeight > 0 ? (int)(totalRootHeight * 0.25f) : 250;
+            int ceilingHeight = totalRootHeight > 0 ? (int)(totalRootHeight * 0.22f) : 220;
             
             int targetHeight = Math.min(contentHeight, ceilingHeight);
 
