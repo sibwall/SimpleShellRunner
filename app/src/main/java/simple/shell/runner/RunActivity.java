@@ -134,7 +134,7 @@ public class RunActivity extends Activity {
                 return false;
             }
             @Override
-            public boolean onDestroyActionMode(android.view.ActionMode mode) {
+            public void onDestroyActionMode(android.view.ActionMode mode) {
             }
         });
         root.addView(input);
