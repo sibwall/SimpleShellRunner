@@ -31,12 +31,6 @@ public class RunActivity extends Activity {
 
     private static final Handler sMainHandler = new Handler(Looper.getMainLooper());
 
-    private final String[] setupCommands = {
-            "adb shell pm grant simple.shell.runner android.permission.INTERACT_ACROSS_USERS",
-            "adb shell pm grant simple.shell.runner android.permission.WRITE_SECURE_SETTINGS",
-            "adb shell pm create-user TestUser"
-    };
-
     private final String[] quickCommands = {
             "cmd activity switch-user YOUR_ID",
             "for i in $(seq 1 999); do cmd activity switch-user $i && break; done",
@@ -44,6 +38,12 @@ public class RunActivity extends Activity {
             "cmd -l",
             "cmd settings put global factory_reset_requested 1",
             "ls /product/app/"
+    };
+
+    private final String[] setupCommands = {
+            "adb shell pm grant simple.shell.runner android.permission.INTERACT_ACROSS_USERS",
+            "adb shell pm grant simple.shell.runner android.permission.WRITE_SECURE_SETTINGS",
+            "adb shell pm create-user TestUser"
     };
 
     private boolean isEn() {
@@ -105,45 +105,6 @@ public class RunActivity extends Activity {
             root.addView(row);
         }
 
-        TextView setupInfoText = new TextView(this);
-        String setupHtml = isEn()
-                ? "<br>Before running some commands, please grant the app necessary permissions via ADB and create a test user (copy and run the commands below using any ADB environment, for example <a href=\"https://github.com/RikkaApps/Shizuku/releases/latest\">Shizuku</a> + <a href=\"https://f-droid.org/ru/packages/in.sunilpaulmathew.ashell/\">aShell</a>):"
-                : "<br>Перед запуском некоторых команд предоставьте приложению нужные разрешения через ADB и создайте пользователя (скопируйте и выполните то, что ниже, через любую ADB среду, например <a href=\"https://github.com/RikkaApps/Shizuku/releases/latest\">Shizuku</a> + <a href=\"https://f-droid.org/ru/packages/in.sunilpaulmathew.ashell/\">aShell</a>):";
-
-        setupInfoText.setText(Html.fromHtml(setupHtml, Html.FROM_HTML_MODE_LEGACY));
-        setupInfoText.setTextSize(14f);
-        setupInfoText.setMovementMethod(LinkMovementMethod.getInstance());
-        setupInfoText.setPadding(0, 8, 0, 8);
-        root.addView(setupInfoText);
-
-        for (String cmd : setupCommands) {
-            LinearLayout row = new LinearLayout(this);
-            row.setOrientation(LinearLayout.HORIZONTAL);
-            row.setGravity(android.view.Gravity.CENTER_VERTICAL);
-            row.setPadding(0, 2, 0, 2);
-
-            TextView cmdText = new TextView(this);
-            cmdText.setText(cmd);
-            cmdText.setTextSize(11f);
-            cmdText.setTextIsSelectable(true);
-            row.addView(cmdText, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
-
-            Button copyBtn = new Button(this);
-            copyBtn.setText(isEn() ? "Copy" : "Копировать");
-            copyBtn.setTextSize(10f);
-            copyBtn.setOnClickListener(v -> {
-                android.content.ClipboardManager clipboard =
-                        (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                android.content.ClipData clip =
-                        android.content.ClipData.newPlainText("setup_command", cmd);
-                clipboard.setPrimaryClip(clip);
-            });
-            row.addView(copyBtn, new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-
-            root.addView(row);
-        }
-
         input = new EditText(this);
         input.setHint(isEn() ? "Enter cmd command" : "Введите cmd команду");
         input.setSingleLine(true);
@@ -189,6 +150,46 @@ public class RunActivity extends Activity {
         scroll.addView(output);
         root.addView(scroll, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f));
+
+        // Секция настройки ADB перенесена вниз (после вывода)
+        TextView setupInfoText = new TextView(this);
+        String setupHtml = isEn()
+                ? "<br>Before running some commands, please grant the app necessary permissions via ADB and create a test user (copy and run the commands below using any ADB environment, for example <a href=\"https://github.com/RikkaApps/Shizuku/releases/latest\">Shizuku</a> + <a href=\"https://f-droid.org/ru/packages/in.sunilpaulmathew.ashell/\">aShell</a>):"
+                : "<br>Перед запуском некоторых команд предоставьте приложению нужные разрешения через ADB и создайте пользователя (скопируйте и выполните то, что ниже, через любую ADB среду, например <a href=\"https://github.com/RikkaApps/Shizuku/releases/latest\">Shizuku</a> + <a href=\"https://f-droid.org/ru/packages/in.sunilpaulmathew.ashell/\">aShell</a>):";
+
+        setupInfoText.setText(Html.fromHtml(setupHtml, Html.FROM_HTML_MODE_LEGACY));
+        setupInfoText.setTextSize(14f);
+        setupInfoText.setMovementMethod(LinkMovementMethod.getInstance());
+        setupInfoText.setPadding(0, 8, 0, 8);
+        root.addView(setupInfoText);
+
+        for (String cmd : setupCommands) {
+            LinearLayout row = new LinearLayout(this);
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+            row.setPadding(0, 2, 0, 2);
+
+            TextView cmdText = new TextView(this);
+            cmdText.setText(cmd);
+            cmdText.setTextSize(12f); // Размер шрифта приведен к 12f как у quickCommands
+            cmdText.setTextIsSelectable(true);
+            row.addView(cmdText, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+
+            Button copyBtn = new Button(this);
+            copyBtn.setText(isEn() ? "Copy" : "Копировать");
+            copyBtn.setTextSize(10f);
+            copyBtn.setOnClickListener(v -> {
+                android.content.ClipboardManager clipboard =
+                        (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                android.content.ClipData clip =
+                        android.content.ClipData.newPlainText("setup_command", cmd);
+                clipboard.setPrimaryClip(clip);
+            });
+            row.addView(copyBtn, new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+            root.addView(row);
+        }
         
         setContentView(root);
 
