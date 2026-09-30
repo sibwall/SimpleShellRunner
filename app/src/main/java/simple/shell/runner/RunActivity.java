@@ -71,9 +71,8 @@ public class RunActivity extends Activity {
         root.setPadding((int)(12 * density), topPadding, (int)(12 * density), (int)(24 * density));
 
         TextView welcomeText = new TextView(this);
-        String welcomeMessage = isEn()
-                ? "Hello! This is an application for testers. Here you can execute simple shell commands on behalf of this application."
-                : "Привет! Это приложение для тестировщиков. Здесь вы можете выполнять простые shell команды от имени приложения.";
+        String welcomeMessage = isEn() ? "Hello! This is an application for testers. Here you can execute simple shell commands on behalf of this application." 
+        : "Привет! Это приложение для тестировщиков. Здесь вы можете выполнять простые shell команды от имени приложения.";
         
         welcomeText.setText(welcomeMessage);
         welcomeText.setTextSize(14f);
@@ -103,14 +102,11 @@ public class RunActivity extends Activity {
             copyBtn.setText(isEn() ? "Copy" : "Копировать");
             copyBtn.setTextSize(10f);
             copyBtn.setOnClickListener(v -> {
-                android.content.ClipboardManager clipboard =
-                        (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                android.content.ClipData clip =
-                        android.content.ClipData.newPlainText("command", cmd);
+                android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                android.content.ClipData clip = android.content.ClipData.newPlainText("command", cmd);
                 clipboard.setPrimaryClip(clip);
             });
-            row.addView(copyBtn, new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            row.addView(copyBtn, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
             root.addView(row);
         }
@@ -121,8 +117,7 @@ public class RunActivity extends Activity {
         input.setMaxLines(1);
         input.setHorizontallyScrolling(true);
         input.setImeOptions(android.view.inputmethod.EditorInfo.IME_ACTION_DONE);
-        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT
-                | android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 
         input.setFilters(new android.text.InputFilter[]{
                 new android.text.InputFilter.LengthFilter(INPUT_MAX_CHARS)
@@ -230,13 +225,10 @@ public class RunActivity extends Activity {
 
         new Thread(() -> {
             try {
-                Process p = new ProcessBuilder("sh", "-c", cmd)
-                        .redirectErrorStream(true)
-                        .start();
+                Process p = new ProcessBuilder("sh", "-c", cmd).redirectErrorStream(true).start();
                 sProcess = p;
 
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(p.getInputStream()));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
                 String line;
                 while ((line = reader.readLine()) != null) {
                     sOutputBuffer.append(line).append("\n");
@@ -265,8 +257,7 @@ public class RunActivity extends Activity {
     private void updateOutputLayout() {
         scroll.post(() -> {
             if (sOutputBuffer.length() == 0) {
-                scroll.setLayoutParams(new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT, 0, 0f));
+                scroll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 0f)); 
                 return;
             }
 
@@ -279,8 +270,7 @@ public class RunActivity extends Activity {
             
             int targetHeight = Math.min(contentHeight, ceilingHeight);
 
-            scroll.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, targetHeight, 0f));
+            scroll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, targetHeight, 0f));
         });
     }
 
