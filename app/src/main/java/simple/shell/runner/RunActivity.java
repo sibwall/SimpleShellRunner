@@ -56,7 +56,19 @@ public class RunActivity extends Activity {
 
         root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
-        root.setPadding(24, 48, 24, 24);
+        float density = getResources().getDisplayMetrics().density;
+        int safeMarginPx = (int)(44 * density);
+        int cornerRadius = 0;
+        
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            android.view.RoundedCorner topCorner = getWindowManager().getDefaultDisplay().getRoundedCorner(android.view.RoundedCorner.POSITION_TOP_RIGHT);
+            if (topCorner != null) {
+                cornerRadius = topCorner.getRadius();
+            }
+        }
+        
+        int topPadding = Math.max(cornerRadius, safeMarginPx);
+        root.setPadding((int)(12 * density), topPadding, (int)(12 * density), (int)(24 * density));
 
         TextView welcomeText = new TextView(this);
         String welcomeMessage = isEn()
